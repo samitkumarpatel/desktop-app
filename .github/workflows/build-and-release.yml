@@ -33,7 +33,7 @@ jobs:
           node-version: '18'
           
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         
       - name: Build app for Linux
         if: matrix.os == 'ubuntu-latest'
