@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <!-- Material UI CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #2c2c2c;
+            overflow: hidden;
+            height: 100vh;
+        }
+        .desktop-app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .title-bar {
+            height: 32px;
+            background-color: #1e1e1e;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #333;
+        }
+        .window-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .close { background-color: #ff5f56; }
+        .minimize { background-color: #ffbd2e; }
+        .maximize { background-color: #27ca3f; }
+        .app-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-header {
+            padding: 20px;
+            background-color: #1976d2;
+            color: white;
+            text-align: center;
+        }
+        .sidebar-header h3 {
+            margin: 0;
+            font-weight: 500;
+        }
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+        }
+        .nav-item:hover {
+            background-color: #e9ecef;
+            color: #1976d2;
+        }
+        .nav-item.active {
+            background-color: #1976d2;
+            color: white;
+            border-right: 3px solid #0d47a1;
+        }
+        .nav-item .material-icons {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        .main-content {
+            flex: 1;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .content-header {
+            padding: 20px 24px;
+            background-color: white;
+            border-bottom: 1px solid #dee2e6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .content-body {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+        .mdc-card {
+            padding: 24px;
+            margin: 0 0 16px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
+            border: 1px solid #e9ecef;
+        }
+        .student-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+        .student-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .student-table th {
+            background-color: #f8f9fa;
+            color: #495057;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .student-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .student-table tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+        .student-table tr:last-child td {
+            border-bottom: none;
+        }
+        .gpa-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        .gpa-excellent { background-color: #28a745; }
+        .gpa-good { background-color: #ffc107; color: #212529; }
+        .gpa-average { background-color: #dc3545; }
+        .action-button {
+            padding: 8px 16px;
+            font-size: 12px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .action-button:hover {
+            background-color: #1565c0;
+        }
+        .mdc-button {
+            padding: 10px 20px;
+            margin: 4px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #1976d2;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .mdc-button:hover {
+            background-color: #1565c0;
+        }
+        .back-button {
+            background-color: #6c757d;
+            margin-bottom: 16px;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .student-detail {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #1976d2;
+        }
+        .student-detail .material-icons {
+            margin-right: 12px;
+            color: #1976d2;
+        }
+        .students-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 16px;
+        }
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: white;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            pointer-events: none;
+        }
+        .create-button {
+            background-color: #28a745;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .create-button:hover {
+            background-color: #218838;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            width: 95%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Responsive modal sizing */
+        @media (max-width: 768px) {
+            .modal {
+                width: 98%;
+                max-width: none;
+                padding: 16px;
+                margin: 10px;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .modal {
+                width: 80%;
+                max-width: 500px;
+            }
+        }
+        
+        @media (min-width: 1025px) {
+            .modal {
+                width: 50%;
+                max-width: 600px;
+            }
+        }
+        
+        @media (min-width: 1400px) {
+            .modal {
+                width: 40%;
+                max-width: 700px;
+            }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            margin: 0;
+            color: #495057;
+        }
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 14px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        /* Remove old styles */
+        .container, .header, .nav-tabs, .nav-tab, .student-grid, .student-card, .student-name, .nav-button {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="desktop-app">
+        <!-- App Container -->
+        <div class="app-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Student Portal</h3>
+                </div>
+                <nav class="sidebar-nav">
+                    <button 
+                        class="nav-item" 
+                        :class="{ active: $route.path === '/' }"
+                        @click="$router.push('/')"
+                    >
+                        <span class="material-icons">dashboard</span>
+                        Dashboard
+                    </button>
+                    <button 
+                        class="nav-item"
+                        :class="{ active: $route.path.startsWith('/student') }"
+                        @click="$router.push('/students')"
+                    >
+                        <span class="material-icons">people</span>
+                        Students
+                    </button>
+                    <button class="nav-item">
+                        <span class="material-icons">analytics</span>
+                        Reports
+                    </button>
+                    <button class="nav-item">
+                        <span class="material-icons">settings</span>
+                        Settings
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="content-header">
+                    <h2 style="margin: 0; color: #495057;">{{ getPageTitle() }}</h2>
+                </div>
+                <div class="content-body">
+                    <router-view />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="home-template">
+        <div class="mdc-card">
+            <h3>Welcome to Student Management System</h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <span class="material-icons" style="font-size: 48px; color: #1976d2;">people</span>
+                    <h4>{{ students.length }} Students</h4>
+                </div>
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <span class="material-icons" style="font-size: 48px; color: #28a745;">school</span>
+                    <h4>5 Majors</h4>
+                </div>
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <span class="material-icons" style="font-size: 48px; color: #ffc107;">grade</span>
+                    <h4>3.7 Avg GPA</h4>
+                </div>
+            </div>
+            <button class="mdc-button" @click="$router.push('/students')" style="margin-top: 20px;">
+                <span class="material-icons" style="margin-right: 8px;">arrow_forward</span>
+                View All Students
+            </button>
+        </div>
+    </template>
+
+    <template id="student-list-template">
+        <div>
+            <div class="students-header">
+                <h2 style="margin: 0;">All Students</h2>
+                <div class="search-container">
+                    <span class="material-icons search-icon">search</span>
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        placeholder="Search students by name, email, or major..."
+                        v-model="searchQuery"
+                        @input="filterStudents"
+                    >
+                </div>
+                <button class="create-button" @click="openCreateModal">
+                    <span class="material-icons">add</span>
+                    Create New Student
+                </button>
+            </div>
+
+            <div v-if="loading" class="loading">
+                Loading students...
+            </div>
+            <div v-else class="student-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Age</th>
+                            <th>Major</th>
+                            <th>GPA</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr 
+                            v-for="student in filteredStudents" 
+                            :key="student.id"
+                            @click="viewStudent(student)"
+                        >
+                            <td>
+                                <strong>{{ student.name }}</strong>
+                            </td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.age }}</td>
+                            <td>{{ student.major }}</td>
+                            <td>
+                                <span 
+                                    class="gpa-badge"
+                                    :class="getGpaClass(student.gpa)"
+                                >
+                                    {{ student.gpa }}
+                                </span>
+                            </td>
+                            <td>
+                                <button 
+                                    class="action-button" 
+                                    @click.stop="viewStudent(student)"
+                                >
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                        <tr v-if="filteredStudents.length === 0">
+                            <td colspan="6" style="text-align: center; color: #6c757d; padding: 40px;">
+                                No students found matching your search criteria.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Create Student Modal -->
+            <div v-if="showCreateModal" class="modal-overlay">
+                <div class="modal" @click.stop>
+                    <div class="modal-header">
+                        <h3 class="modal-title">Create New Student</h3>
+                        <button class="close-button" @click="closeCreateModal">&times;</button>
+                    </div>
+                    
+                    <form @submit.prevent="createStudent">
+                        <div class="form-group">
+                            <label class="form-label" for="student-name">Full Name</label>
+                            <input 
+                                id="student-name"
+                                type="text" 
+                                class="form-input" 
+                                v-model="newStudent.name"
+                                required
+                                placeholder="Enter student's full name"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="student-email">Email</label>
+                            <input 
+                                id="student-email"
+                                type="email" 
+                                class="form-input" 
+                                v-model="newStudent.email"
+                                required
+                                placeholder="Enter email address"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="student-age">Age</label>
+                            <input 
+                                id="student-age"
+                                type="number" 
+                                class="form-input" 
+                                v-model="newStudent.age"
+                                required
+                                min="16"
+                                max="100"
+                                placeholder="Enter age"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="student-major">Major</label>
+                            <input 
+                                id="student-major"
+                                type="text" 
+                                class="form-input" 
+                                v-model="newStudent.major"
+                                required
+                                placeholder="Enter major/field of study"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="student-gpa">GPA</label>
+                            <input 
+                                id="student-gpa"
+                                type="number" 
+                                class="form-input" 
+                                v-model="newStudent.gpa"
+                                required
+                                min="0"
+                                max="4"
+                                step="0.1"
+                                placeholder="Enter GPA (0.0 - 4.0)"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="student-phone">Phone</label>
+                            <input 
+                                id="student-phone"
+                                type="tel" 
+                                class="form-input" 
+                                v-model="newStudent.phone"
+                                required
+                                placeholder="Enter phone number"
+                            >
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="mdc-button cancel-button" @click="closeCreateModal">
+                                Cancel
+                            </button>
+                            <button type="submit" class="mdc-button">
+                                Create Student
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="student-detail-template">
+        <div>
+            <button class="mdc-button back-button" @click="goBack">
+                <span class="material-icons">arrow_back</span>
+                Back to Students
+            </button>
+            
+            <div v-if="student" class="mdc-card">
+                <h2>{{ student.name }}</h2>
+                <div class="student-info">
+                    <div class="student-detail">
+                        <span class="material-icons">email</span>
+                        <strong>Email:</strong> {{ student.email }}
+                    </div>
+                    <div class="student-detail">
+                        <span class="material-icons">phone</span>
+                        <strong>Phone:</strong> {{ student.phone }}
+                    </div>
+                    <div class="student-detail">
+                        <span class="material-icons">cake</span>
+                        <strong>Age:</strong> {{ student.age }}
+                    </div>
+                    <div class="student-detail">
+                        <span class="material-icons">school</span>
+                        <strong>Major:</strong> {{ student.major }}
+                    </div>
+                    <div class="student-detail">
+                        <span class="material-icons">grade</span>
+                        <strong>GPA:</strong> {{ student.gpa }}
+                    </div>
+                </div>
+            </div>
+            
+            <div v-else class="mdc-card">
+                <h2>Student not found</h2>
+                <p>The requested student could not be found.</p>
+            </div>
+        </div>
+    </template>
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-demi"></script>
+    <script src="https://unpkg.com/pinia@2/dist/pinia.iife.js"></script>
+    <script src="https://unpkg.com/vue-router@4.0.15/dist/vue-router.global.js"></script>
+    
+    <script>
+    const { createApp, ref, computed, onMounted, watch } = Vue
+    const { createPinia, defineStore, storeToRefs } = Pinia
+    const { createMemoryHistory, createRouter } = VueRouter
+
+    // Pinia Store for Student Management
+    const useStudentStore = defineStore('student', () => {
+        const students = ref([])
+        const loading = ref(false)
+        const selectedStudent = ref(null)
+
+        // Mock API data
+        const mockStudents = [
+            { id: 1, name: 'John Doe', email: 'john@example.com', age: 20, major: 'Computer Science', gpa: 3.8, phone: '+1-555-0101' },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com', age: 19, major: 'Mathematics', gpa: 3.9, phone: '+1-555-0102' },
+            { id: 3, name: 'Mike Johnson', email: 'mike@example.com', age: 21, major: 'Physics', gpa: 3.7, phone: '+1-555-0103' },
+            { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', age: 20, major: 'Chemistry', gpa: 3.6, phone: '+1-555-0104' },
+            { id: 5, name: 'David Brown', email: 'david@example.com', age: 22, major: 'Engineering', gpa: 3.5, phone: '+1-555-0105' }
+        ]
+
+        const fetchStudents = async () => {
+            loading.value = true
+            // Simulate an API call
+            setTimeout(() => {
+                students.value = mockStudents
+                loading.value = false
+            }, 1000)
+        }
+
+        const addStudent = (studentData) => {
+            const newId = Math.max(...students.value.map(s => s.id)) + 1
+            const newStudent = {
+                id: newId,
+                ...studentData
+            }
+            students.value.push(newStudent)
+        }
+
+        const getStudentById = (id) => {
+            return students.value.find(student => student.id === parseInt(id))
+        }
+
+        const setSelectedStudent = (student) => {
+            selectedStudent.value = student
+        }
+
+        return {
+            students,
+            loading,
+            selectedStudent,
+            fetchStudents,
+            addStudent,
+            getStudentById,
+            setSelectedStudent
+        }
+    })
+
+    // Components
+    const HomeComponent = {
+        template: '#home-template',
+        setup() {
+            const store = useStudentStore()
+            const { students, loading } = storeToRefs(store)
+            const { fetchStudents } = store
+
+            onMounted(() => {
+                fetchStudents()
+            })
+
+            return {
+                students, loading
+            }
+        }
+    }
+
+    const StudentListComponent = {
+        template: '#student-list-template',
+        setup() {
+            const store = useStudentStore()
+            const { students, loading } = storeToRefs(store)
+            const { fetchStudents, setSelectedStudent, addStudent } = store
+            const router = VueRouter.useRouter()
+
+            const searchQuery = ref('')
+            const filteredStudents = ref([])
+            const showCreateModal = ref(false)
+            const newStudent = ref({
+                name: '',
+                email: '',
+                age: '',
+                major: '',
+                gpa: '',
+                phone: ''
+            })
+
+            onMounted(() => {
+                fetchStudents()
+            })
+
+            // Watch for changes in students array and update filtered list
+            watch(() => students.value, () => {
+                filteredStudents.value = students.value
+            }, { immediate: true })
+
+            const filterStudents = () => {
+                if (!searchQuery.value.trim()) {
+                    filteredStudents.value = students.value
+                    return
+                }
+                
+                const query = searchQuery.value.toLowerCase()
+                filteredStudents.value = students.value.filter(student =>
+                    student.name.toLowerCase().includes(query) ||
+                    student.email.toLowerCase().includes(query) ||
+                    student.major.toLowerCase().includes(query)
+                )
+            }
+
+            const viewStudent = (student) => {
+                setSelectedStudent(student)
+                router.push(`/student/${student.id}`)
+            }
+
+            const getGpaClass = (gpa) => {
+                if (gpa >= 3.7) return 'gpa-excellent'
+                if (gpa >= 3.3) return 'gpa-good'
+                return 'gpa-average'
+            }
+
+            const openCreateModal = () => {
+                showCreateModal.value = true
+            }
+
+            const closeCreateModal = () => {
+                showCreateModal.value = false
+                resetNewStudent()
+            }
+
+            const resetNewStudent = () => {
+                newStudent.value = {
+                    name: '',
+                    email: '',
+                    age: '',
+                    major: '',
+                    gpa: '',
+                    phone: ''
+                }
+            }
+
+            const createStudent = () => {
+                // Basic validation
+                if (!newStudent.value.name || !newStudent.value.email || !newStudent.value.age || 
+                    !newStudent.value.major || !newStudent.value.gpa || !newStudent.value.phone) {
+                    alert('Please fill in all fields')
+                    return
+                }
+
+                const studentData = {
+                    ...newStudent.value,
+                    age: parseInt(newStudent.value.age),
+                    gpa: parseFloat(newStudent.value.gpa)
+                }
+
+                addStudent(studentData)
+                closeCreateModal()
+                
+                // Show success message
+                alert('Student created successfully!')
+            }
+
+            return {
+                students,
+                loading,
+                searchQuery,
+                filteredStudents,
+                showCreateModal,
+                newStudent,
+                filterStudents,
+                viewStudent,
+                getGpaClass,
+                openCreateModal,
+                closeCreateModal,
+                createStudent
+            }
+        }
+    }
+    
+    const StudentDetailComponent = {
+        template: '#student-detail-template',
+        setup() {
+            const store = useStudentStore()
+            const route = VueRouter.useRoute()
+            const router = VueRouter.useRouter()
+            
+            const student = computed(() => {
+                return store.getStudentById(route.params.id)
+            })
+
+            const goBack = () => {
+                router.push('/students')
+            }
+
+            return {
+                student,
+                goBack
+            }
+        }
+    }
+
+    // Router setup
+    const router = createRouter({
+        history: createMemoryHistory(),
+        routes: [
+            { path: '/', component: HomeComponent },
+            { path: '/students', component: StudentListComponent },
+            { path: '/student/:id', component: StudentDetailComponent }
+        ]
+    })
+
+    // Create Pinia instance
+    const pinia = createPinia()
+    
+    // Create and mount the app
+    createApp({
+        setup() {
+            const title = ref('Students')
+            const route = VueRouter.useRoute()
+            const store = useStudentStore()
+
+            const getPageTitle = () => {
+                switch(route.path) {
+                    case '/': return 'Dashboard'
+                    case '/students': return 'Student Management'
+                    default: 
+                        if (route.path.startsWith('/student/')) return 'Student Details'
+                        return 'Dashboard'
+                }
+            }
+
+            onMounted(() => {
+                store.fetchStudents()
+            })
+
+            return { 
+                title,
+                getPageTitle
+            }
+        }
+    })
+    .use(pinia)
+    .use(router)
+    .mount('#app')
+    </script>
+</body>
+</html>

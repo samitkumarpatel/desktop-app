@@ -1,0 +1,24 @@
+{
+  "name": "desktop-app",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:mac": "electron . --platform=darwin",
+    "start:windows": "electron . --platform=win32",
+    "start:linux": "electron . --platform=linux",
+    "dev": "electron . --enable-logging",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:windows": "electron-builder --windows",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder --mac --windows --linux"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "electron": "^37.2.1",
+    "electron-builder": "^24.13.3"
+  }
+}
