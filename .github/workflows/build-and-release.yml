@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
   packages: write
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
